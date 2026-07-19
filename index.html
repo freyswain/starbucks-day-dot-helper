@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Starbucks Day Dot Helper</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Starbucks-style font -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --sb-green: #1e3932;
+        --sb-dark: #0d2620;
+        --sb-light: #f7f7f7;
+        --sb-accent: #00704a;
+        --text-light: #fff;
+        --text-dark: #000;
+    }
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+        background: var(--sb-green);
+        color: var(--text-light);
+        margin: 0;
+        padding: 0;
+        transition: background 0.3s, color 0.3s;
+    }
+
+    body.light {
+        background: var(--sb-light);
+        color: var(--text-dark);
+    }
+
+    header {
+        background: var(--sb-dark);
+        padding: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .icon {
+        font-size: 30px;
+    }
+
+    #clock {
+        font-size: 18px;
+        opacity: 0.8;
+    }
+
+    #modeToggle {
+        background: var(--sb-accent);
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    #modeToggle:hover {
+        background: #005c3d;
+    }
+
+    .menu {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .menu button {
+        background: var(--sb-accent);
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .menu button:hover {
+        background: #005c3d;
+    }
+
+    .container {
+        margin: 20px auto;
+        max-width: 600px;
+        background: var(--sb-dark);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.4);
+        transition: background 0.3s;
+    }
+
+    body.light .container {
+        background: #e0e0e0;
+    }
+
+    select, input {
+        width: 90%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: none;
+        font-size: 16px;
+    }
+
+    button.calc {
+        background: var(--sb-accent);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button.calc:hover {
+        background: #005c3d;
+    }
+
+    .result {
+        margin-top: 20px;
+        font-size: 22px;
+        font-weight: bold;
+        background: var(--sb-dark);
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    body.light .result {
+        background: #cfcfcf;
+    }
+
+    footer {
+        margin-top: 40px;
+        padding: 10px;
+        font-size: 14px;
+        opacity: 0.7;
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <span class="icon">☕</span> Starbucks Day Dot Helper
+    <div>
+        <span id="clock"></span>
+        <button id="modeToggle">Light Mode</button>
+    </div>
+</header>
+
+<div class="menu">
+    <button onclick="showTool('daydot')">Day Dot Helper</button>
+    <button onclick="showTool('future')">Future Tool</button>
+</div>
+
+<div class="container" id="daydot">
+    <h2>Select Day Dot Duration</h2>
+
+    <select id="preset">
+        <option value="0">Choose preset...</option>
+        <option value="1">24 Hours</option>
+        <option value="3">3 Days</option>
+        <option value="4">4 Days</option>
+        <option value="5">5 Days</option>
+        <option value="7">1 Week</option>
+        <option value="30">1 Month</option>
+        <option value="60">2 Months</option>
+        <option value="90">3 Months</option>
+        <option value="custom">Custom (Adhoc)</option>
+    </select>
+
+    <input type="number" id="customDays" placeholder="Enter custom number of days" style="display:none;">
+
+    <button class="calc" onclick="calculate()">Calculate Day Dot</button>
+
+    <div class="result" id="resultBox" style="display:none;"></div>
+</div>
+
+<div class="container" id="future" style="display:none;">
+    <h2>Future Tool Placeholder</h2>
+    <p>Add thawing calculator, shelf-life helper, or anything else here.</p>
+</div>
+
+<footer>
+    Starbucks‑themed Day Dot Helper — Free Tool
+</footer>
+
+<script>
+// Live Clock
+function updateClock() {
+    const now = new Date();
+    document.getElementById("clock").innerText =
+        now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Dark/Light Mode
+document.getElementById("modeToggle").addEventListener("click", () => {
+    document.body.classList.toggle("light");
+    document.getElementById("modeToggle").innerText =
+        document.body.classList.contains("light") ? "Dark Mode" : "Light Mode";
+});
+
+// Multi-tool menu
+function showTool(tool) {
+    document.getElementById("daydot").style.display = tool === "daydot" ? "block" : "none";
+    document.getElementById("future").style.display = tool === "future" ? "block" : "none";
+}
+
+// Day Dot Calculator
+function calculate() {
+    const preset = document.getElementById("preset").value;
+    const customInput = document.getElementById("customDays");
+    let days;
+
+    if (preset === "custom") {
+        days = parseInt(customInput.value);
+        if (isNaN(days) || days < 1) {
+            alert("Please enter a valid number of days.");
+            return;
+        }
+    } else {
+        days = parseInt(preset);
+        if (days === 0) {
+            alert("Please select a preset or custom duration.");
+            return;
+        }
+    }
+
+    const now = new Date();
+    const future = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+
+    const formatted = future.toLocaleDateString("en-GB", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+
+    const resultBox = document.getElementById("resultBox");
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `Day Dot Expiry Date:<br><br>${formatted}`;
+}
+
+document.getElementById("preset").addEventListener("change", function() {
+    const customInput = document.getElementById("customDays");
+    customInput.style.display = this.value === "custom" ? "block" : "none";
+});
+</script>
+
+</body>
+</html>

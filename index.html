@@ -35,7 +35,6 @@
         color: var(--text-dark);
     }
 
-    /* Muted coffee logo watermark */
     body::before {
         content: "";
         position: fixed;
@@ -195,7 +194,6 @@
     <button onclick="showTool('shelflife')">Shelf‑Life Document</button>
 </div>
 
-<!-- DAY DOT TOOL -->
 <div class="container" id="daydot">
     <h2>Day Dot Calculator</h2>
 
@@ -239,7 +237,7 @@
         <button class="product" onclick="setPreset(1)">Ground Coffee (Opened) — 24hrs</button>
         <button class="product" onclick="setPreset(7)">Opened Coffee Beans — 7 Days</button>
         <button class="product" onclick="setPreset(5)">Alternative Milks — 5 Days</button>
-        <button class="product" onclick="setPreset(3)">Cold Brew — 3 Days</button>
+        <button class="product" onclick="setPreset(7)">Cold Brew — 7 Days</button>
         <button class="product" onclick="setPreset(2)">Pastries — 2 Days</button>
         <button class="product" onclick="setPreset(14)">Shortbread — 14 Days</button>
         <button class="product" onclick="setPreset(8)">Brownies — 8 Days</button>
@@ -247,7 +245,6 @@
     </div>
 </div>
 
-<!-- SHELF LIFE DOCUMENT -->
 <div class="container" id="shelflife" style="display:none;">
     <h2>FY26 Shelf‑Life Reference</h2>
     <p>This rewritten summary is based on your uploaded FY26 shelf‑life document.</p>
@@ -324,7 +321,6 @@
 </footer>
 
 <script>
-// Live Clock
 function updateClock() {
     const now = new Date();
     document.getElementById("clock").innerText =
@@ -333,27 +329,23 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Dark/Light Mode
 document.getElementById("modeToggle").addEventListener("click", () => {
     document.body.classList.toggle("light");
     document.getElementById("modeToggle").innerText =
         document.body.classList.contains("light") ? "Dark Mode" : "Light Mode";
 });
 
-// Multi-tool menu
 function showTool(tool) {
     document.getElementById("daydot").style.display = tool === "daydot" ? "block" : "none";
     document.getElementById("shelflife").style.display = tool === "shelflife" ? "block" : "none";
 }
 
-// Product preset buttons
 function setPreset(days) {
     document.getElementById("preset").value = days.toString();
     document.getElementById("customBlock").style.display = "none";
     calculate();
 }
 
-// Day Dot Calculator
 function calculate() {
     const preset = document.getElementById("preset").value;
     let future;

@@ -11,6 +11,8 @@
 <style>
     :root {
         --sb-green: #1e3932;
+        --sb-green-light: #2e544c;
+        --sb-green-muted: #3a6b61;
         --sb-dark: #0d2620;
         --sb-light: #f7f7f7;
         --sb-accent: #00704a;
@@ -20,25 +22,33 @@
 
     body {
         font-family: 'Montserrat', sans-serif;
-        background: var(--sb-green);
-        color: var(--text-light);
         margin: 0;
         padding: 0;
-        transition: background 0.3s, color 0.3s;
-
-        background-image: url('https://i.imgur.com/0fZQF3M.png');
-        background-size: 600px;
-        background-repeat: repeat;
+        color: var(--text-light);
+        background: linear-gradient(180deg, var(--sb-green) 0%, var(--sb-green-light) 50%, var(--sb-green-muted) 100%);
         background-attachment: fixed;
-        opacity: 0.98;
+        transition: background 0.3s, color 0.3s;
     }
 
     body.light {
         background: var(--sb-light);
         color: var(--text-dark);
-        background-image: url('https://i.imgur.com/0fZQF3M.png');
-        background-size: 600px;
-        background-repeat: repeat;
+    }
+
+    /* Muted coffee logo watermark */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://i.imgur.com/8fKQx7M.png');
+        background-size: 500px;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.08;
+        pointer-events: none;
     }
 
     header {
@@ -49,6 +59,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        color: white;
     }
 
     #clock {
@@ -64,10 +75,6 @@
         color: white;
         cursor: pointer;
         font-size: 14px;
-    }
-
-    #modeToggle:hover {
-        background: #005c3d;
     }
 
     .menu {
@@ -87,22 +94,17 @@
         cursor: pointer;
     }
 
-    .menu button:hover {
-        background: #005c3d;
-    }
-
     .container {
         margin: 20px auto;
         max-width: 700px;
-        background: var(--sb-dark);
+        background: rgba(0,0,0,0.35);
         padding: 20px;
         border-radius: 12px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.4);
-        transition: background 0.3s;
+        backdrop-filter: blur(4px);
     }
 
     body.light .container {
-        background: #e0e0e0;
+        background: rgba(255,255,255,0.7);
     }
 
     select, input {
@@ -125,28 +127,20 @@
         margin-top: 10px;
     }
 
-    button.calc:hover {
-        background: #005c3d;
-    }
-
     .result {
         margin-top: 20px;
         font-size: 22px;
         font-weight: bold;
-        background: var(--sb-dark);
+        background: rgba(0,0,0,0.4);
         padding: 15px;
         border-radius: 10px;
     }
 
-    body.light .result {
-        background: #cfcfcf;
-    }
-
     .product-list {
+        margin-top: 30px;
         display: flex;
         flex-direction: column;
         gap: 10px;
-        margin: 20px 0;
     }
 
     .product {
@@ -157,10 +151,6 @@
         border-radius: 8px;
         font-size: 16px;
         cursor: pointer;
-    }
-
-    .product:hover {
-        background: #005c3d;
     }
 
     footer {
@@ -207,16 +197,7 @@
 
 <!-- DAY DOT TOOL -->
 <div class="container" id="daydot">
-    <h2>Select Day Dot Duration</h2>
-
-    <h3>Staple Starbucks Products</h3>
-    <div class="product-list">
-        <button class="product" onclick="setPreset(1)">Cold Foam (Prepared) — 24hrs</button>
-        <button class="product" onclick="setPreset(5)">Refresher Juices — 5 Days</button>
-        <button class="product" onclick="setPreset(1)">Ground Coffee (Opened) — 24hrs</button>
-        <button class="product" onclick="setPreset(7)">Opened Coffee Beans — 7 Days</button>
-        <button class="product" onclick="setPreset(5)">Alternative Milks — 5 Days</button>
-    </div>
+    <h2>Day Dot Calculator</h2>
 
     <select id="preset">
         <option value="0">Choose preset...</option>
@@ -250,6 +231,20 @@
     <button class="calc" onclick="calculate()">Calculate Day Dot</button>
 
     <div class="result" id="resultBox" style="display:none;"></div>
+
+    <h3>Staple Starbucks Products</h3>
+    <div class="product-list">
+        <button class="product" onclick="setPreset(1)">Cold Foam (Prepared) — 24hrs</button>
+        <button class="product" onclick="setPreset(5)">Refresher Juices — 5 Days</button>
+        <button class="product" onclick="setPreset(1)">Ground Coffee (Opened) — 24hrs</button>
+        <button class="product" onclick="setPreset(7)">Opened Coffee Beans — 7 Days</button>
+        <button class="product" onclick="setPreset(5)">Alternative Milks — 5 Days</button>
+        <button class="product" onclick="setPreset(3)">Cold Brew — 3 Days</button>
+        <button class="product" onclick="setPreset(2)">Pastries — 2 Days</button>
+        <button class="product" onclick="setPreset(14)">Shortbread — 14 Days</button>
+        <button class="product" onclick="setPreset(8)">Brownies — 8 Days</button>
+        <button class="product" onclick="setPreset(10)">Loaf Cakes — 10 Days</button>
+    </div>
 </div>
 
 <!-- SHELF LIFE DOCUMENT -->

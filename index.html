@@ -25,11 +25,20 @@
         margin: 0;
         padding: 0;
         transition: background 0.3s, color 0.3s;
+
+        background-image: url('https://i.imgur.com/0fZQF3M.png');
+        background-size: 600px;
+        background-repeat: repeat;
+        background-attachment: fixed;
+        opacity: 0.98;
     }
 
     body.light {
         background: var(--sb-light);
         color: var(--text-dark);
+        background-image: url('https://i.imgur.com/0fZQF3M.png');
+        background-size: 600px;
+        background-repeat: repeat;
     }
 
     header {
@@ -40,10 +49,6 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-    }
-
-    .icon {
-        font-size: 30px;
     }
 
     #clock {
@@ -88,7 +93,7 @@
 
     .container {
         margin: 20px auto;
-        max-width: 600px;
+        max-width: 700px;
         background: var(--sb-dark);
         padding: 20px;
         border-radius: 12px;
@@ -137,6 +142,27 @@
         background: #cfcfcf;
     }
 
+    .product-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 20px 0;
+    }
+
+    .product {
+        background: var(--sb-accent);
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .product:hover {
+        background: #005c3d;
+    }
+
     footer {
         margin-top: 40px;
         padding: 10px;
@@ -144,13 +170,30 @@
         opacity: 0.7;
         text-align: center;
     }
+
+    .shelf-section h3 {
+        margin-top: 20px;
+        font-size: 20px;
+        text-decoration: underline;
+    }
+
+    .shelf-section ul {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 20px;
+    }
+
+    .shelf-section li {
+        margin: 6px 0;
+        font-size: 16px;
+    }
 </style>
 </head>
 
 <body>
 
 <header>
-    <span class="icon">☕</span> Starbucks Day Dot Helper
+    ☕ Starbucks Day Dot Helper
     <div>
         <span id="clock"></span>
         <button id="modeToggle">Light Mode</button>
@@ -159,35 +202,126 @@
 
 <div class="menu">
     <button onclick="showTool('daydot')">Day Dot Helper</button>
-    <button onclick="showTool('future')">Future Tool</button>
+    <button onclick="showTool('shelflife')">Shelf‑Life Document</button>
 </div>
 
+<!-- DAY DOT TOOL -->
 <div class="container" id="daydot">
     <h2>Select Day Dot Duration</h2>
+
+    <h3>Staple Starbucks Products</h3>
+    <div class="product-list">
+        <button class="product" onclick="setPreset(1)">Cold Foam (Prepared) — 24hrs</button>
+        <button class="product" onclick="setPreset(5)">Refresher Juices — 5 Days</button>
+        <button class="product" onclick="setPreset(1)">Ground Coffee (Opened) — 24hrs</button>
+        <button class="product" onclick="setPreset(7)">Opened Coffee Beans — 7 Days</button>
+        <button class="product" onclick="setPreset(5)">Alternative Milks — 5 Days</button>
+    </div>
 
     <select id="preset">
         <option value="0">Choose preset...</option>
         <option value="1">24 Hours</option>
+        <option value="2">2 Days</option>
         <option value="3">3 Days</option>
         <option value="4">4 Days</option>
         <option value="5">5 Days</option>
-        <option value="7">1 Week</option>
+        <option value="6">6 Days</option>
+        <option value="8">8 Days</option>
+        <option value="10">10 Days</option>
+        <option value="14">14 Days</option>
+        <option value="16">16 Days</option>
+        <option value="29">29 Days</option>
         <option value="30">1 Month</option>
         <option value="60">2 Months</option>
         <option value="90">3 Months</option>
         <option value="custom">Custom (Adhoc)</option>
     </select>
 
-    <input type="number" id="customDays" placeholder="Enter custom number of days" style="display:none;">
+    <div id="customBlock" style="display:none;">
+        <select id="customType">
+            <option value="hours">Hours</option>
+            <option value="days">Days</option>
+            <option value="months">Months</option>
+        </select>
+
+        <input type="number" id="customValue" placeholder="Enter amount">
+    </div>
 
     <button class="calc" onclick="calculate()">Calculate Day Dot</button>
 
     <div class="result" id="resultBox" style="display:none;"></div>
 </div>
 
-<div class="container" id="future" style="display:none;">
-    <h2>Future Tool Placeholder</h2>
-    <p>Add thawing calculator, shelf-life helper, or anything else here.</p>
+<!-- SHELF LIFE DOCUMENT -->
+<div class="container" id="shelflife" style="display:none;">
+    <h2>FY26 Shelf‑Life Reference</h2>
+    <p>This rewritten summary is based on your uploaded FY26 shelf‑life document.</p>
+
+    <div class="shelf-section">
+
+        <h3>Ambient Bakery</h3>
+        <ul>
+            <li>Bake-in-store pastries: 29 days delivered / End of day once baked</li>
+            <li>Bake-in-store cookies: 29 days delivered / 24 hours once baked</li>
+            <li>Bakehouse pastries: 2 days delivered / 24 hours display</li>
+            <li>Bridor pastries: 2 days delivered / 2 days display</li>
+            <li>Raspberry & Biscuit Cake Cubes: 5 days delivered / 2 days display</li>
+            <li>Cruffin: 2 days delivered / 24 hours display</li>
+            <li>Pistachio Scroll: 3 days delivered / 24 hours display</li>
+            <li>Muffins: 3 days delivered / 24 hours display</li>
+            <li>Luxury Fruit Toast: 4 days delivered / End of day</li>
+            <li>Doughnut: 3 days delivered / 24 hours display</li>
+            <li>Lemon Tart: 4 days delivered / 2 days display</li>
+            <li>Cinnamon Tray Buns: 4 days delivered / 2 days display</li>
+            <li>Victoria Sponge: 5 days delivered / 2 days display</li>
+            <li>Belgian Cookie: 6 days delivered / 2 days display</li>
+            <li>Carrot Cake: 6 days delivered / 3 days display</li>
+            <li>Brownie / Blondie / Cake Pops: 8 days delivered / 3 days display</li>
+            <li>Loaf Cakes: 10 days delivered / 2 days display</li>
+            <li>Chocolate Caramel Shortbread: 14 days delivered / 4 days display</li>
+        </ul>
+
+        <h3>Beverage Components (Ambient)</h3>
+        <ul>
+            <li>Teavana Green: 12 hours</li>
+            <li>Mocha Sauce: 24 hours</li>
+            <li>Frapp Roast: 48 hours</li>
+            <li>Refresha Inclusions: 3 days</li>
+            <li>Powders (Mocha, Matcha, Cookies & Cream): 7 days</li>
+            <li>Protein Powder: 14 days</li>
+            <li>Cold Foam Powder / Caramel Drizzle: 14 days</li>
+            <li>Syrups & Bases: 30 days</li>
+            <li>Nutmeg: 4 months</li>
+            <li>Cinnamon: 5 months</li>
+            <li>Sugar: 6 months</li>
+        </ul>
+
+        <h3>Chilled Display</h3>
+        <ul>
+            <li>Cold Eat Sandwiches: Use pack date</li>
+            <li>Hot Eat Items: Use pack date</li>
+            <li>Porridge / Berry Crunch: Use pack date</li>
+            <li>Egg Bites: Use pack date</li>
+        </ul>
+
+        <h3>Chilled Components</h3>
+        <ul>
+            <li>Dairy Milk: 3 days</li>
+            <li>UHT Cream: 3 days</li>
+            <li>Alt Milks (Almond/Oat/Soya): 5 days</li>
+            <li>Refresha Bases: 3 days</li>
+            <li>Soya Whip: 5 days</li>
+            <li>Strawberry Sauce / Chai / Lemonade: 5 days</li>
+        </ul>
+
+        <h3>Made in Store</h3>
+        <ul>
+            <li>Whipped Creams: 24 hours</li>
+            <li>Cream Cold Foam: 24 hours</li>
+            <li>Cold Brew: 7 days</li>
+        </ul>
+
+    </div>
 </div>
 
 <footer>
@@ -214,31 +348,45 @@ document.getElementById("modeToggle").addEventListener("click", () => {
 // Multi-tool menu
 function showTool(tool) {
     document.getElementById("daydot").style.display = tool === "daydot" ? "block" : "none";
-    document.getElementById("future").style.display = tool === "future" ? "block" : "none";
+    document.getElementById("shelflife").style.display = tool === "shelflife" ? "block" : "none";
+}
+
+// Product preset buttons
+function setPreset(days) {
+    document.getElementById("preset").value = days.toString();
+    document.getElementById("customBlock").style.display = "none";
+    calculate();
 }
 
 // Day Dot Calculator
 function calculate() {
     const preset = document.getElementById("preset").value;
-    const customInput = document.getElementById("customDays");
-    let days;
-
-    if (preset === "custom") {
-        days = parseInt(customInput.value);
-        if (isNaN(days) || days < 1) {
-            alert("Please enter a valid number of days.");
-            return;
-        }
-    } else {
-        days = parseInt(preset);
-        if (days === 0) {
-            alert("Please select a preset or custom duration.");
-            return;
-        }
-    }
+    let future;
 
     const now = new Date();
-    const future = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+
+    if (preset === "custom") {
+        const type = document.getElementById("customType").value;
+        const value = parseInt(document.getElementById("customValue").value);
+
+        if (isNaN(value) || value < 1) {
+            alert("Please enter a valid number.");
+            return;
+        }
+
+        if (type === "hours") {
+            future = new Date(now.getTime() + value * 60 * 60 * 1000);
+        } else if (type === "days") {
+            future = new Date(now.getTime() + value * 24 * 60 * 60 * 1000);
+        } else if (type === "months") {
+            future = new Date(now);
+            future.setMonth(future.getMonth() + value);
+        }
+
+    } else {
+        const days = parseInt(preset);
+        future = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+    }
 
     const formatted = future.toLocaleDateString("en-GB", {
         weekday: "long",
@@ -253,8 +401,8 @@ function calculate() {
 }
 
 document.getElementById("preset").addEventListener("change", function() {
-    const customInput = document.getElementById("customDays");
-    customInput.style.display = this.value === "custom" ? "block" : "none";
+    const block = document.getElementById("customBlock");
+    block.style.display = this.value === "custom" ? "block" : "none";
 });
 </script>
 

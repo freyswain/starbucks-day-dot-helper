@@ -211,6 +211,36 @@
         cursor: pointer;
     }
 
+    /* Styled Start Mode selector */
+    #startMode {
+        width: 90%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: 2px solid var(--sb-accent);
+        background: rgba(255,255,255,0.15);
+        color: var(--text-light);
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    body.light #startMode {
+        background: rgba(0,0,0,0.05);
+        color: var(--text-dark);
+        border: 2px solid var(--sb-green);
+    }
+
+    #startMode:hover {
+        border-color: #009a63;
+        background: rgba(255,255,255,0.25);
+    }
+
+    body.light #startMode:hover {
+        background: rgba(0,0,0,0.1);
+        border-color: #1e3932;
+    }
+
     /* Modal background overlay */
     .sb-modal {
         display: none;
@@ -301,6 +331,14 @@
 <div class="container" id="daydot">
     <h2>Day Dot Calculator</h2>
 
+    <h3>Start Date</h3>
+    <select id="startMode">
+        <option value="now">Now (Current Date & Time)</option>
+        <option value="from">From a Selected Date</option>
+    </select>
+
+    <input type="date" id="fromDate" class="sb-date" style="display:none;">
+
     <select id="preset">
         <option value="0">Choose preset...</option>
         <option value="1">24 Hours</option>
@@ -323,166 +361,3 @@
     <div id="customBlock" style="display:none;">
         <select id="customType">
             <option value="hours">Hours</option>
-            <option value="days">Days</option>
-            <option value="months">Months</option>
-        </select>
-
-        <input type="date" id="fromDate" class="sb-date" style="display:none;">
-    </div>
-
-    <button class="calc" onclick="openSBModal()">Calculate Day Dot</button>
-
-    <div class="result" id="resultBox" style="display:none;"></div>
-
-    <h3>Staple Starbucks Products</h3>
-    <div class="product-list">
-
-        <button class="product" onclick="setPreset(5)">Alternative Milks — 5 Days</button>
-        <button class="product" onclick="setPreset(5)">Refresher Juices — 5 Days</button>
-        <button class="product" onclick="setPreset(2)">Bake House Pastries — 2 Days</button>
-        <button class="product" onclick="setPreset(14)">Shortbread — 14 Days</button>
-        <button class="product" onclick="setPreset(8)">Brownie — 8 Days</button>
-        <button class="product" onclick="setPreset(10)">Loaf Cakes — 10 Days</button>
-        <button class="product" onclick="setPreset(1)">Cold Foam (Prepared) — 24hrs</button>
-        <button class="product" onclick="setPreset(7)">Cold Brew — 7 Days</button>
-        <button class="product" onclick="setPreset(1)">Ground Coffee (Opened) — 24hrs</button>
-        <button class="product" onclick="setPreset(7)">Opened Coffee Beans — 7 Days</button>
-
-    </div>
-</div>
-
-<div class="container" id="shelflife" style="display:none;">
-    <h2>FY26 Shelf‑Life Reference</h2>
-    <p>This rewritten summary is based on your uploaded FY26 shelf‑life document.</p>
-
-    <div class="shelf-section">
-
-        <h3>Ambient Bakery</h3>
-        <ul>
-            <li>Bake-in-store pastries: 29 days delivered / End of day once baked</li>
-            <li>Bake-in-store cookies: 29 days delivered / 24 hours once baked</li>
-            <li>Bakehouse pastries: 2 days delivered / 24 hours display</li>
-            <li>Bridor pastries: 2 days delivered / 2 days display</li>
-            <li>Raspberry & Biscuit Cake Cubes: 5 days delivered / 2 days display</li>
-            <li>Cruffin: 2 days delivered / 24 hours display</li>
-            <li>Pistachio Scroll: 3 days delivered / 24 hours display</li>
-            <li>Muffins: 3 days delivered / 24 hours display</li>
-            <li>Luxury Fruit Toast: 4 days delivered / End of day</li>
-            <li>Doughnut: 3 days delivered / 24 hours display</li>
-            <li>Lemon Tart: 4 days delivered / 2 days display</li>
-            <li>Cinnamon Tray Buns: 4 days delivered / 2 days display</li>
-            <li>Victoria Sponge: 5 days delivered / 2 days display</li>
-            <li>Belgian Cookie: 6 days delivered / 2 days display</li>
-            <li>Carrot Cake: 6 days delivered / 3 days display</li>
-            <li>Brownie / Blondie / Cake Pops: 8 days delivered / 3 days display</li>
-            <li>Loaf Cakes: 10 days delivered / 2 days display</li>
-            <li>Chocolate Caramel Shortbread: 14 days delivered / 4 days display</li>
-        </ul>
-
-        <h3>Beverage Components (Ambient)</h3>
-        <ul>
-            <li>Teavana Green: 12 hours</li>
-            <li>Mocha Sauce: 24 hours</li>
-            <li>Frapp Roast: 48 hours</li>
-            <li>Refresha Inclusions: 3 days</li>
-            <li>Powders (Mocha, Matcha, Cookies & Cream): 7 days</li>
-            <li>Protein Powder: 14 days</li>
-            <li>Cold Foam Powder / Caramel Drizzle: 14 days</li>
-            <li>Syrups & Bases: 30 days</li>
-            <li>Nutmeg: 4 months</li>
-            <li>Cinnamon: 5 months</li>
-            <li>Sugar: 6 months</li>
-        </ul>
-
-        <h3>Chilled Display</h3>
-        <ul>
-            <li>Cold Eat Sandwiches: Use pack date</li>
-            <li>Hot Eat Items: Use pack date</li>
-            <li>Porridge / Berry Crunch: Use pack date</li>
-            <li>Egg Bites: Use pack date</li>
-        </ul>
-
-        <h3>Chilled Components</h3>
-        <ul>
-            <li>Dairy Milk: 3 days</li>
-            <li>UHT Cream: 3 days</li>
-            <li>Alt Milks (Almond/Oat/Soya): 5 days</li>
-            <li>Refresha Bases: 3 days</li>
-            <li>Soya Whip: 5 days</li>
-            <li>Strawberry Sauce / Chai / Lemonade: 5 days</li>
-        </ul>
-
-        <h3>Made in Store</h3>
-        <ul>
-            <li>Whipped Creams: 24 hours</li>
-            <li>Cream Cold Foam: 24 hours</li>
-            <li>Cold Brew: 7 days</li>
-        </ul>
-
-    </div>
-</div>
-
-<footer>
-    Starbucks‑themed Day Dot Helper — Free Tool
-</footer>
-
-<!-- MODAL -->
-<div id="sbModal" class="sb-modal">
-    <div class="sb-modal-content">
-        <span class="sb-close">&times;</span>
-        <h2>Select Start Date</h2>
-        <p>Choose whether to begin your Day Dot calculation from now or a future date.</p>
-
-        <button class="sb-modal-btn" onclick="selectStartMode('now')">Use Now</button>
-        <button class="sb-modal-btn" onclick="selectStartMode('from')">Choose Date</button>
-    </div>
-</div>
-
-<script>
-function updateClock() {
-    const now = new Date();
-    document.getElementById("clock").innerText =
-        now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-document.getElementById("modeToggle").addEventListener("click", () => {
-    document.body.classList.toggle("light");
-    document.getElementById("modeToggle").innerText =
-        document.body.classList.contains("light") ? "Dark Mode" : "Light Mode";
-});
-
-function showTool(tool) {
-    document.getElementById("daydot").style.display = tool === "daydot" ? "block" : "none";
-    document.getElementById("shelflife").style.display = tool === "shelflife" ? "block" : "none";
-}
-
-function setPreset(days) {
-    document.getElementById("preset").value = days.toString();
-    document.getElementById("customBlock").style.display = "none";
-    openSBModal();
-}
-
-function openSBModal() {
-    document.getElementById("sbModal").style.display = "block";
-}
-
-document.querySelector(".sb-close").onclick = function() {
-    document.getElementById("sbModal").style.display = "none";
-};
-
-function selectStartMode(mode) {
-    document.getElementById("sbModal").style.display = "none";
-
-    let startDate;
-
-    if (mode === "now") {
-        startDate = new Date();
-    } else {
-        const selected = document.getElementById("fromDate").value;
-        if (!selected) {
-            alert("Please select a start date.");
-            return;
-        }
-        startDate = new Date

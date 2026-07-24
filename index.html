@@ -175,6 +175,111 @@
         margin: 6px 0;
         font-size: 16px;
     }
+
+    /* Starbucks-themed calendar date picker */
+    .sb-date {
+        width: 90%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: 2px solid var(--sb-accent);
+        background: rgba(255,255,255,0.15);
+        color: var(--text-light);
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    body.light .sb-date {
+        background: rgba(0,0,0,0.05);
+        color: var(--text-dark);
+        border: 2px solid var(--sb-green);
+    }
+
+    .sb-date:hover {
+        border-color: #009a63;
+        background: rgba(255,255,255,0.25);
+    }
+
+    body.light .sb-date:hover {
+        background: rgba(0,0,0,0.1);
+        border-color: #1e3932;
+    }
+
+    .sb-date::-webkit-calendar-picker-indicator {
+        filter: invert(80%) sepia(20%) saturate(300%) hue-rotate(100deg);
+        cursor: pointer;
+    }
+
+    /* Modal background overlay */
+    .sb-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+    }
+
+    /* Modal box */
+    .sb-modal-content {
+        background: #1e3932;
+        margin: 10% auto;
+        padding: 25px;
+        border-radius: 15px;
+        width: 80%;
+        max-width: 400px;
+        color: white;
+        position: relative;
+        animation: sbModalFade 0.25s ease-out;
+        background-image: url('https://i.imgur.com/8fKQx7M.png');
+        background-size: 250px;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.95;
+    }
+
+    .sb-close {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 28px;
+        cursor: pointer;
+        opacity: 0.8;
+    }
+
+    .sb-close:hover {
+        opacity: 1;
+    }
+
+    .sb-modal-btn {
+        width: 100%;
+        padding: 12px;
+        margin-top: 15px;
+        background: #00704a;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .sb-modal-btn:hover {
+        background: #009a63;
+    }
+
+    @keyframes sbModalFade {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
 </style>
 </head>
 
@@ -222,10 +327,10 @@
             <option value="months">Months</option>
         </select>
 
-        <input type="number" id="customValue" placeholder="Enter amount">
+        <input type="date" id="fromDate" class="sb-date" style="display:none;">
     </div>
 
-    <button class="calc" onclick="calculate()">Calculate Day Dot</button>
+    <button class="calc" onclick="openSBModal()">Calculate Day Dot</button>
 
     <div class="result" id="resultBox" style="display:none;"></div>
 
@@ -233,23 +338,14 @@
     <div class="product-list">
 
         <button class="product" onclick="setPreset(5)">Alternative Milks — 5 Days</button>
-
         <button class="product" onclick="setPreset(5)">Refresher Juices — 5 Days</button>
-
         <button class="product" onclick="setPreset(2)">Bake House Pastries — 2 Days</button>
-
         <button class="product" onclick="setPreset(14)">Shortbread — 14 Days</button>
-
         <button class="product" onclick="setPreset(8)">Brownie — 8 Days</button>
-
         <button class="product" onclick="setPreset(10)">Loaf Cakes — 10 Days</button>
-
         <button class="product" onclick="setPreset(1)">Cold Foam (Prepared) — 24hrs</button>
-
         <button class="product" onclick="setPreset(7)">Cold Brew — 7 Days</button>
-
         <button class="product" onclick="setPreset(1)">Ground Coffee (Opened) — 24hrs</button>
-
         <button class="product" onclick="setPreset(7)">Opened Coffee Beans — 7 Days</button>
 
     </div>
@@ -330,6 +426,18 @@
     Starbucks‑themed Day Dot Helper — Free Tool
 </footer>
 
+<!-- MODAL -->
+<div id="sbModal" class="sb-modal">
+    <div class="sb-modal-content">
+        <span class="sb-close">&times;</span>
+        <h2>Select Start Date</h2>
+        <p>Choose whether to begin your Day Dot calculation from now or a future date.</p>
+
+        <button class="sb-modal-btn" onclick="selectStartMode('now')">Use Now</button>
+        <button class="sb-modal-btn" onclick="selectStartMode('from')">Choose Date</button>
+    </div>
+</div>
+
 <script>
 function updateClock() {
     const now = new Date();
@@ -353,55 +461,28 @@ function showTool(tool) {
 function setPreset(days) {
     document.getElementById("preset").value = days.toString();
     document.getElementById("customBlock").style.display = "none";
-    calculate();
+    openSBModal();
 }
 
-function calculate() {
-    const preset = document.getElementById("preset").value;
-    let future;
+function openSBModal() {
+    document.getElementById("sbModal").style.display = "block";
+}
 
-    const now = new Date();
+document.querySelector(".sb-close").onclick = function() {
+    document.getElementById("sbModal").style.display = "none";
+};
 
-    if (preset === "custom") {
-        const type = document.getElementById("customType").value;
-        const value = parseInt(document.getElementById("customValue").value);
+function selectStartMode(mode) {
+    document.getElementById("sbModal").style.display = "none";
 
-        if (isNaN(value) || value < 1) {
-            alert("Please enter a valid number.");
+    let startDate;
+
+    if (mode === "now") {
+        startDate = new Date();
+    } else {
+        const selected = document.getElementById("fromDate").value;
+        if (!selected) {
+            alert("Please select a start date.");
             return;
         }
-
-        if (type === "hours") {
-            future = new Date(now.getTime() + value * 60 * 60 * 1000);
-        } else if (type === "days") {
-            future = new Date(now.getTime() + value * 24 * 60 * 60 * 1000);
-        } else if (type === "months") {
-            future = new Date(now);
-            future.setMonth(future.getMonth() + value);
-        }
-
-    } else {
-        const days = parseInt(preset);
-        future = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
-    }
-
-    const formatted = future.toLocaleDateString("en-GB", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-    });
-
-    const resultBox = document.getElementById("resultBox");
-    resultBox.style.display = "block";
-    resultBox.innerHTML = `Day Dot Expiry Date:<br><br>${formatted}`;
-}
-
-document.getElementById("preset").addEventListener("change", function() {
-    const block = document.getElementById("customBlock");
-    block.style.display = this.value === "custom" ? "block" : "none";
-});
-</script>
-
-</body>
-</html>
+        startDate = new Date

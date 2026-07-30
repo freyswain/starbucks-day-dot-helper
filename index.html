@@ -1,59 +1,209 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Starbucks Day Dot Helper</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<title>Day Dot Helper — Debug Build</title>
 <style>
-  :root{
-    --sb-green:#1e3932;
-    --sb-accent:#00704a;
-    --sb-dark:#0d2620;
-    --light-bg:#f7f7f7;
-    --text-light:#fff;
-    --text-dark:#111;
+  :root{--sb-green:#1e3932;--sb-accent:#00704a;--light-bg:#f7f7f7;}
+  html,body{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;}
+  body{background:linear-gradient(180deg,var(--sb-green),#2e544c);color:#fff}
+  .content{max-width:900px;margin:24px auto;padding:18px;background:rgba(0,0,0,0.25);border-radius:10px;}
+  .result{margin-top:12px;padding:10px;background:rgba(255,255,255,0.06);border-radius:8px}
+  #quickModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999}
+  #quickModalContent{max-width:420px;margin:10% auto;background:#1e3932;padding:14px;border-radius:10px;color:#fff}
+  .qm-btn{padding:8px 10px;border-radius:8px;border:none;background:#00704a;color:#fff;cursor:pointer}
+  /* ensure visible even if CSS partially broken */
+  .fallback-note{font-size:13px;opacity:0.9}
+</style>
+</head>
+<body>
+  <div class="content" id="mainContent">
+    <h1>Day Dot Helper — Debug</h1>
+    <p class="fallback-note">This debug build prints progress to the console. Open DevTools → Console to follow logs.</p>
+
+    <h3>Start From</h3>
+    <select id="startMode"><option value="future">Future Date</option><option value="now">Now</option></select>
+    <input id="fromDate" type="date" style="display:block;margin-top:8px;padding:8px;border-radius:6px">
+
+    <h3 style="margin-top:14px">Preset</h3>
+    <select id="preset">
+      <option value="0">Choose preset...</option>
+      <option value="1">24 Hours</option>
+      <option value="2">2 Days</option>
+      <option value="3">3 Days</option>
+      <option value="7">7 Days</option>
+      <option value="8">8 Days</option>
+    </select>
+
+    <div style="margin-top:12px">
+      <button id="calcBtn" class="qm-btn">Calculate</button>
+    </div>
+
+    <div id="resultBox" class="result" style="display:none"></div>
+
+    <h3 style="margin-top:18px">Staples</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="qm-btn" onclick="quickStart(3)">Refresher Juices — 3 Days</button>
+      <button class="qm-btn" onclick="quickStart(8)">Brownie — 8 Days</button>
+      <button class="qm-btn" onclick="quickStart(1)">Cold Foam — 24 hrs</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="quickModal" role="dialog" aria-hidden="true">
+    <div id="quickModalContent">
+      <h3>Start From</h3>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button id="qmTodayBtn" class="qm-btn">Today</button>
+        <button id="qmFutureBtn" class="qm-btn">Future Date</button>
+      </div>
+      <div id="qmFutureBlock" style="display:none;margin-top:12px">
+        <input id="qmFutureDate" type="date" style="padding:8px;border-radius:6px;display:block;margin-bottom:8px">
+        <div style="display:flex;gap:8px">
+          <button id="qmConfirmBtn" class="qm-btn">Confirm</button>
+          <button id="qmCancelBtn" class="qm-btn" style="background:#555">Cancel</button>
+        </div>
+      </div>
+      <div style="text-align:right;margin-top:8px"><button id="qmClose" class="qm-btn" style="background:#444">Close</button></div>
+    </div>
+  </div>
+
+<script>
+/* Defensive debug wrapper: any error will be caught and logged without breaking the page */
+(function(){
+  console.log('DEBUG: script start');
+
+  try {
+    // Basic DOM readiness
+    document.addEventListener('DOMContentLoaded', function(){
+      console.log('DEBUG: DOMContentLoaded');
+
+      // Elements
+      const startModeEl = document.getElementById('startMode');
+      const fromDateEl = document.getElementById('fromDate');
+      const presetEl = document.getElementById('preset');
+      const calcBtn = document.getElementById('calcBtn');
+      const resultBox = document.getElementById('resultBox');
+
+      const quickModal = document.getElementById('quickModal');
+      const qmFutureBlock = document.getElementById('qmFutureBlock');
+      const qmFutureDate = document.getElementById('qmFutureDate');
+      const qmTodayBtn = document.getElementById('qmTodayBtn');
+      const qmFutureBtn = document.getElementById('qmFutureBtn');
+      const qmConfirmBtn = document.getElementById('qmConfirmBtn');
+      const qmCancelBtn = document.getElementById('qmCancelBtn');
+      const qmClose = document.getElementById('qmClose');
+
+      console.log('DEBUG: elements fetched');
+
+      // Safe defaults
+      (function setDefaults(){
+        const d = new Date();
+        const iso = d.toISOString().slice(0,10);
+        if(!fromDateEl.value) fromDateEl.value = iso;
+        if(qmFutureDate && !qmFutureDate.value) qmFutureDate.value = iso;
+        console.log('DEBUG: default dates set', iso);
+      })();
+
+      // Start mode visibility
+      function updateFromDateVisibility(){
+        fromDateEl.style.display = startModeEl.value === 'future' ? 'block' : 'none';
+      }
+      startModeEl.addEventListener('change', updateFromDateVisibility);
+      updateFromDateVisibility();
+
+      // Calculate function (defensive)
+      function calculate(startOverride, dateOverride){
+        try {
+          console.log('DEBUG: calculate called', startOverride, dateOverride);
+          const preset = presetEl.value;
+          if(preset === '0'){ alert('Please choose a preset.'); return; }
+
+          let startMode = startOverride ? startOverride : startModeEl.value;
+          let startDate;
+          if(startMode === 'now'){
+            startDate = new Date();
+          } else {
+            const selected = dateOverride ? dateOverride : fromDateEl.value;
+            if(!selected){ alert('Please select a start date.'); return; }
+            startDate = new Date(selected + 'T00:00:00');
+          }
+
+          let future;
+          const days = parseInt(preset,10);
+          if(!isNaN(days)){
+            if(days === 1){
+              if(startMode === 'now'){
+                future = new Date(startDate.getTime() + 24*60*60*1000);
+              } else {
+                future = new Date(startDate.getTime() + 0);
+              }
+            } else {
+              future = new Date(startDate.getTime() + (days - 1) * 24*60*60*1000);
+            }
+          } else {
+            alert('Invalid preset value');
+            return;
+          }
+
+          const formatted = future.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+          resultBox.style.display = 'block';
+          resultBox.innerHTML = 'Expiry: <strong>' + formatted + '</strong>';
+          console.log('DEBUG: calculation complete', formatted);
+        } catch(calcErr){
+          console.error('DEBUG: calculate error', calcErr);
+          alert('Calculation error — see console for details.');
+        }
+      }
+
+      // Wire main calculate button
+      calcBtn.addEventListener('click', function(){ calculate(); });
+
+      // Quick modal functions
+      window.quickStart = function(days){
+        console.log('DEBUG: quickStart', days);
+        presetEl.value = String(days);
+        qmFutureBlock.style.display = 'none';
+        quickModal.style.display = 'block';
+        quickModal.setAttribute('aria-hidden','false');
+      };
+
+      qmTodayBtn.addEventListener('click', function(){
+        console.log('DEBUG: qmTodayBtn clicked');
+        calculate('now');
+        quickModal.style.display = 'none';
+      });
+
+      qmFutureBtn.addEventListener('click', function(){
+        console.log('DEBUG: qmFutureBtn clicked');
+        qmFutureBlock.style.display = 'block';
+        qmFutureDate.focus();
+      });
+
+      qmConfirmBtn.addEventListener('click', function(){
+        console.log('DEBUG: qmConfirmBtn clicked', qmFutureDate.value);
+        if(!qmFutureDate.value){ alert('Select a date'); return; }
+        calculate('future', qmFutureDate.value);
+        quickModal.style.display = 'none';
+      });
+
+      qmCancelBtn.addEventListener('click', function(){ quickModal.style.display = 'none'; });
+      qmClose.addEventListener('click', function(){ quickModal.style.display = 'none'; });
+
+      // Click outside to close
+      quickModal.addEventListener('click', function(e){
+        if(e.target === quickModal) quickModal.style.display = 'none';
+      });
+
+      // Final log
+      console.log('DEBUG: initialization complete');
+    }); // DOMContentLoaded
+  } catch(e){
+    console.error('DEBUG: fatal script error', e);
+    // Do not rethrow — keep page visible
   }
-
-  html,body{height:100%;margin:0;font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
-  body{
-    background:linear-gradient(180deg,var(--sb-green) 0%, #2e544c 55%, #3a6b61 100%);
-    color:var(--text-light);
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-  }
-  body.light{
-    background:var(--light-bg);
-    color:var(--text-dark);
-  }
-
-  header{
-    display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(0,0,0,0.25);
-    backdrop-filter:blur(6px);
-  }
-  header h1{margin:0;font-size:18px;font-weight:700;}
-  #clock{font-size:13px;opacity:0.9;margin-right:12px;}
-  #modeToggle{background:var(--sb-accent);border:none;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;}
-
-  .menu{display:flex;gap:12px;justify-content:center;padding:14px 10px;}
-  .menu button{background:rgba(255,255,255,0.06);border:none;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14px;}
-  body.light .menu button{background:#fff;color:var(--text-dark);border:1px solid #e6e6e6;}
-
-  .wrap{max-width:820px;margin:18px auto;padding:18px;border-radius:12px;background:rgba(0,0,0,0.28);backdrop-filter:blur(6px);}
-  body.light .wrap{background:rgba(255,255,255,0.9);}
-
-  h2{margin:0 0 12px 0;font-size:20px;}
-  h3{margin:18px 0 8px 0;font-size:16px;}
-
-  select,input[type="date"],input[type="number"]{
-    width:100%;padding:10px;border-radius:8px;border:none;font-size:15px;margin-top:8px;
-  }
-  .sb-date{border:2px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:inherit;}
-  body.light .sb-date{background:#fff;border:1px solid #ddd;color:var(--text-dark);}
-
-  .calc{display:inline-block;background:var(--sb-accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;margin-top:12px;font-size:15px;}
-
-  .result{margin-top:16px;padding:12px;border-radius:10px;background:rgba(0,0,0,0.35);font-weight:700;}
-  body.light .result{background:#fff;border:1px solid #eee;color:var(--text-dark);}
-
-  .product-list{display:flex;flex
+})();
+</script>
+</body>
+</html>

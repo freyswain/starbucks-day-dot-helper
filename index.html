@@ -1,134 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Starbucks Day Dot Helper</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --sb-green:#1e3932;
-    --sb-accent:#00704a;
-    --sb-dark:#0d2620;
-    --light-bg:#f7f7f7;
-    --text-light:#fff;
-    --text-dark:#111;
-  }
+    <meta charset="UTF-8">
+    <title>Starbucks Day Dot Helper v2</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #006241; /* Starbucks green */
+            color: white;
+        }
 
-  html,body{height:100%;margin:0;font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
-  body{
-    background:linear-gradient(180deg,var(--sb-green) 0%, #2e544c 55%, #3a6b61 100%);
-    color:var(--text-light);
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-  }
-  body.light{
-    background:var(--light-bg);
-    color:var(--text-dark);
-  }
+        header {
+            background-color: #004f33;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
 
-  header{
-    display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(0,0,0,0.25);
-    backdrop-filter:blur(6px);
-  }
-  header h1{margin:0;font-size:18px;font-weight:700;}
-  #clock{font-size:13px;opacity:0.9;margin-right:12px;}
-  #modeToggle{background:var(--sb-accent);border:none;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;}
+        nav {
+            background-color: #003d27;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
 
-  .menu{display:flex;gap:12px;justify-content:center;padding:14px 10px;}
-  .menu button{background:rgba(255,255,255,0.06);border:none;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14px;}
-  body.light .menu button{background:#fff;color:var(--text-dark);border:1px solid #e6e6e6;}
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 8px 16px;
+            border: 2px solid white;
+            border-radius: 6px;
+        }
 
-  .wrap{max-width:820px;margin:18px auto;padding:18px;border-radius:12px;background:rgba(0,0,0,0.28);backdrop-filter:blur(6px);}
-  body.light .wrap{background:rgba(255,255,255,0.9);}
+        nav a:hover {
+            background-color: white;
+            color: #003d27;
+        }
 
-  h2{margin:0 0 12px 0;font-size:20px;}
-  h3{margin:18px 0 8px 0;font-size:16px;}
+        .container {
+            padding: 20px;
+        }
 
-  select,input[type="date"],input[type="number"]{
-    width:100%;padding:10px;border-radius:8px;border:none;font-size:15px;margin-top:8px;
-  }
-  .sb-date{border:2px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:inherit;}
-  body.light .sb-date{background:#fff;border:1px solid #ddd;color:var(--text-dark);}
+        .section-title {
+            font-size: 26px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid white;
+            padding-bottom: 5px;
+        }
 
-  .calc{display:inline-block;background:var(--sb-accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;margin-top:12px;font-size:15px;}
+        .calculator-box {
+            background-color: #004f33;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
 
-  .result{margin-top:16px;padding:12px;border-radius:10px;background:rgba(0,0,0,0.35);font-weight:700;}
-  body.light .result{background:#fff;border:1px solid #eee;color:var(--text-dark);}
+        .staple-items {
+            background-color: #003d27;
+            padding: 20px;
+            border-radius: 10px;
+        }
 
-  .product-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
-  .product{flex:1 1 48%;min-width:160px;background:var(--sb-accent);color:#fff;padding:10px;border-radius:10px;border:none;cursor:pointer;text-align:left;font-size:14px;}
-  body.light .product{background:#e9f6ef;color:var(--sb-green);border:1px solid #dfeee6;}
+        .staple-items button {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+            padding: 12px;
+            font-size: 18px;
+            background-color: white;
+            color: #003d27;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
 
-  footer{margin-top:18px;padding:10px;text-align:center;opacity:0.8;font-size:13px;}
+        .staple-items button:hover {
+            background-color: #cce3d8;
+        }
 
-  /* Quick modal overlay */
-  #quickModal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);-webkit-overflow-scrolling:touch;}
-  #quickModalContent{
-    width:92%;max-width:420px;margin:10% auto;background:var(--sb-green);color:#fff;border-radius:12px;padding:16px;box-shadow:0 12px 30px rgba(0,0,0,0.5);
-    transform-origin:center center;animation:popIn 180ms ease-out;
-  }
-  @keyframes popIn{from{opacity:0;transform:scale(0.98)}to{opacity:1;transform:scale(1)}}
-  #quickModalContent h3{margin:0 0 8px 0;}
-  .qm-buttons{display:flex;gap:10px;margin-top:8px;}
-  .qm-btn{flex:1;padding:10px;border-radius:10px;border:none;background:#00704a;color:#fff;cursor:pointer;font-size:14px;}
-  .qm-btn:hover{background:#009a63;}
-  #qmFutureBlock{display:none;margin-top:12px;}
-  #qmFutureDate{width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:10px;}
-  #qmClose{margin-top:8px;text-align:right;opacity:0.9;cursor:pointer;font-size:13px;}
+        .mode-select {
+            margin-bottom: 15px;
+        }
 
-  /* Responsive tweaks */
-  @media (max-width:520px){
-    .product{flex:1 1 100%;}
-    #quickModalContent{margin:18% auto;padding:14px;}
-  }
-</style>
+        .mode-select button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .now-btn {
+            background-color: #ffffff;
+            color: #003d27;
+        }
+
+        .future-btn {
+            background-color: #cce3d8;
+            color: #003d27;
+        }
+
+        /* Shelf Life Page */
+        #shelf-life-page {
+            display: none;
+        }
+    </style>
+
+    <script>
+        function showPage(page) {
+            document.getElementById("main-page").style.display = page === "main" ? "block" : "none";
+            document.getElementById("shelf-life-page").style.display = page === "shelf" ? "block" : "none";
+        }
+
+        function setMode(mode) {
+            alert("Calculator mode set to: " + mode);
+            // Insert your existing calculator logic here
+        }
+
+        function completeStapleTask(item) {
+            alert("Completed: " + item);
+            // Insert your existing staple item logic here
+        }
+    </script>
 </head>
+
 <body>
 
-<header>
-  <h1>☕ Starbucks Day Dot Helper</h1>
-  <div style="display:flex;align-items:center;">
-    <div id="clock" aria-live="polite">--:--:--</div>
-    <button id="modeToggle">Light Mode</button>
-  </div>
-</header>
+<header>Starbucks Day Dot Helper — Version 2</header>
 
-<div class="menu">
-  <button onclick="showTool('daydot')">Day Dot Helper</button>
-  <button onclick="showTool('shelflife')">Shelf‑Life Document</button>
+<nav>
+    <a href="#" onclick="showPage('main')">Day Dot Helper</a>
+    <a href="#" onclick="showPage('shelf')">Shelf Life Document</a>
+</nav>
+
+<div class="container">
+
+    <!-- MAIN PAGE -->
+    <div id="main-page">
+        <div class="section-title">Day Dot Calculator</div>
+
+        <div class="calculator-box">
+            <div class="mode-select">
+                <button class="now-btn" onclick="setMode('now')">Now</button>
+                <button class="future-btn" onclick="setMode('future')">Future</button>
+            </div>
+
+            <!-- Insert your calculator UI from Version 1 here -->
+            <p>Calculator goes here…</p>
+        </div>
+
+        <div class="section-title">Staple Items</div>
+
+        <div class="staple-items">
+            <!-- Replace these with your actual staple items -->
+            <button onclick="completeStapleTask('Milk Pitchers')">Milk Pitchers</button>
+            <button onclick="completeStapleTask('Whipped Cream')">Whipped Cream</button>
+            <button onclick="completeStapleTask('Cold Brew')">Cold Brew</button>
+            <button onclick="completeStapleTask('Mocha')">Mocha</button>
+            <button onclick="completeStapleTask('Frapp Roast')">Frapp Roast</button>
+        </div>
+    </div>
+
+    <!-- SHELF LIFE PAGE -->
+    <div id="shelf-life-page">
+        <div class="section-title">Shelf Life Document</div>
+
+        <!-- Insert your full shelf-life document from Version 1 here -->
+        <p>Your shelf life document content goes here…</p>
+    </div>
+
 </div>
 
-<div class="wrap" id="daydot">
-  <h2>Day Dot Calculator</h2>
-
-  <h3>Start From</h3>
-  <select id="startMode" aria-label="Start mode">
-    <option value="future">Future Date</option>
-    <option value="now">Now (Current Date & Time)</option>
-  </select>
-
-  <input id="fromDate" class="sb-date" type="date" aria-label="Start date">
-
-  <h3>Preset / Custom</h3>
-  <select id="preset" aria-label="Preset">
-    <option value="0">Choose preset...</option>
-    <option value="1">24 Hours</option>
-    <option value="2">2 Days</option>
-    <option value="3">3 Days</option>
-    <option value="4">4 Days</option>
-    <option value="5">5 Days</option>
-    <option value="6">6 Days</option>
-    <option value="7">7 Days</option>
-    <option value="8">8 Days</option>
-    <option value="10">10 Days</option>
-    <option value="14">14 Days</option>
-    <option value="16">16 Days</option>
-    <option value="29">29 Days</option>
-    <option value="30">1 Month</option>
-    <option value="60">2 Months</option>
-    <option value="90">3 Months</option>
-    <option value="custom">Custom (Adhoc)</option>
-  </select>
-
-  <div id="customBlock" style="display:none;margin-top:8px;">
+</body>
+</html>

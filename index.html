@@ -1,209 +1,222 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Day Dot Helper — Debug Build</title>
+<title>Starbucks Day Dot Helper</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root{--sb-green:#1e3932;--sb-accent:#00704a;--light-bg:#f7f7f7;}
-  html,body{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;}
-  body{background:linear-gradient(180deg,var(--sb-green),#2e544c);color:#fff}
-  .content{max-width:900px;margin:24px auto;padding:18px;background:rgba(0,0,0,0.25);border-radius:10px;}
-  .result{margin-top:12px;padding:10px;background:rgba(255,255,255,0.06);border-radius:8px}
-  #quickModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999}
-  #quickModalContent{max-width:420px;margin:10% auto;background:#1e3932;padding:14px;border-radius:10px;color:#fff}
-  .qm-btn{padding:8px 10px;border-radius:8px;border:none;background:#00704a;color:#fff;cursor:pointer}
-  /* ensure visible even if CSS partially broken */
-  .fallback-note{font-size:13px;opacity:0.9}
+  :root{
+    --sb-green:#1e3932;
+    --sb-accent:#00704a;
+    --sb-dark:#0d2620;
+    --light-bg:#f7f7f7;
+    --text-light:#fff;
+    --text-dark:#111;
+  }
+
+  html,body{height:100%;margin:0;font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+  body{
+    background:linear-gradient(180deg,var(--sb-green) 0%, #2e544c 55%, #3a6b61 100%);
+    color:var(--text-light);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+  body.light{
+    background:var(--light-bg);
+    color:var(--text-dark);
+  }
+
+  header{
+    display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(0,0,0,0.25);
+    backdrop-filter:blur(6px);
+  }
+  header h1{margin:0;font-size:18px;font-weight:700;}
+  #clock{font-size:13px;opacity:0.9;margin-right:12px;}
+  #modeToggle{background:var(--sb-accent);border:none;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;}
+
+  .menu{display:flex;gap:12px;justify-content:center;padding:14px 10px;}
+  .menu button{background:rgba(255,255,255,0.06);border:none;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14px;}
+  body.light .menu button{background:#fff;color:var(--text-dark);border:1px solid #e6e6e6;}
+
+  .wrap{max-width:820px;margin:18px auto;padding:18px;border-radius:12px;background:rgba(0,0,0,0.28);backdrop-filter:blur(6px);}
+  body.light .wrap{background:rgba(255,255,255,0.9);}
+
+  h2{margin:0 0 12px 0;font-size:20px;}
+  h3{margin:18px 0 8px 0;font-size:16px;}
+
+  select,input[type="date"],input[type="number"]{
+    width:100%;padding:10px;border-radius:8px;border:none;font-size:15px;margin-top:8px;
+  }
+  .sb-date{border:2px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:inherit;}
+  body.light .sb-date{background:#fff;border:1px solid #ddd;color:var(--text-dark);}
+
+  .calc{display:inline-block;background:var(--sb-accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;margin-top:12px;font-size:15px;}
+
+  .result{margin-top:16px;padding:12px;border-radius:10px;background:rgba(0,0,0,0.35);font-weight:700;}
+  body.light .result{background:#fff;border:1px solid #eee;color:var(--text-dark);}
+
+  .product-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+  .product{flex:1 1 48%;min-width:160px;background:var(--sb-accent);color:#fff;padding:10px;border-radius:10px;border:none;cursor:pointer;text-align:left;font-size:14px;}
+  body.light .product{background:#e9f6ef;color:var(--sb-green);border:1px solid #dfeee6;}
+
+  footer{margin-top:18px;padding:10px;text-align:center;opacity:0.8;font-size:13px;}
+
+  /* Quick modal overlay */
+  #quickModal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);-webkit-overflow-scrolling:touch;}
+  #quickModalContent{
+    width:92%;max-width:420px;margin:10% auto;background:var(--sb-green);color:#fff;border-radius:12px;padding:16px;box-shadow:0 12px 30px rgba(0,0,0,0.5);
+    transform-origin:center center;animation:popIn 180ms ease-out;
+  }
+  @keyframes popIn{from{opacity:0;transform:scale(0.98)}to{opacity:1;transform:scale(1)}}
+  #quickModalContent h3{margin:0 0 8px 0;}
+  .qm-buttons{display:flex;gap:10px;margin-top:8px;}
+  .qm-btn{flex:1;padding:10px;border-radius:10px;border:none;background:#00704a;color:#fff;cursor:pointer;font-size:14px;}
+  .qm-btn:hover{background:#009a63;}
+  #qmFutureBlock{display:none;margin-top:12px;}
+  #qmFutureDate{width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:10px;}
+  #qmClose{margin-top:8px;text-align:right;opacity:0.9;cursor:pointer;font-size:13px;}
+
+  /* Responsive tweaks */
+  @media (max-width:520px){
+    .product{flex:1 1 100%;}
+    #quickModalContent{margin:18% auto;padding:14px;}
+  }
 </style>
 </head>
 <body>
-  <div class="content" id="mainContent">
-    <h1>Day Dot Helper — Debug</h1>
-    <p class="fallback-note">This debug build prints progress to the console. Open DevTools → Console to follow logs.</p>
 
-    <h3>Start From</h3>
-    <select id="startMode"><option value="future">Future Date</option><option value="now">Now</option></select>
-    <input id="fromDate" type="date" style="display:block;margin-top:8px;padding:8px;border-radius:6px">
+<header>
+  <h1>☕ Starbucks Day Dot Helper</h1>
+  <div style="display:flex;align-items:center;">
+    <div id="clock" aria-live="polite">--:--:--</div>
+    <button id="modeToggle">Light Mode</button>
+  </div>
+</header>
 
-    <h3 style="margin-top:14px">Preset</h3>
-    <select id="preset">
-      <option value="0">Choose preset...</option>
-      <option value="1">24 Hours</option>
-      <option value="2">2 Days</option>
-      <option value="3">3 Days</option>
-      <option value="7">7 Days</option>
-      <option value="8">8 Days</option>
+<div class="menu">
+  <button onclick="showTool('daydot')">Day Dot Helper</button>
+  <button onclick="showTool('shelflife')">Shelf‑Life Document</button>
+</div>
+
+<div class="wrap" id="daydot">
+  <h2>Day Dot Calculator</h2>
+
+  <h3>Start From</h3>
+  <select id="startMode" aria-label="Start mode">
+    <option value="future">Future Date</option>
+    <option value="now">Now (Current Date & Time)</option>
+  </select>
+
+  <input id="fromDate" class="sb-date" type="date" aria-label="Start date">
+
+  <h3>Preset / Custom</h3>
+  <select id="preset" aria-label="Preset">
+    <option value="0">Choose preset...</option>
+    <option value="1">24 Hours</option>
+    <option value="2">2 Days</option>
+    <option value="3">3 Days</option>
+    <option value="4">4 Days</option>
+    <option value="5">5 Days</option>
+    <option value="6">6 Days</option>
+    <option value="7">7 Days</option>
+    <option value="8">8 Days</option>
+    <option value="10">10 Days</option>
+    <option value="14">14 Days</option>
+    <option value="16">16 Days</option>
+    <option value="29">29 Days</option>
+    <option value="30">1 Month</option>
+    <option value="60">2 Months</option>
+    <option value="90">3 Months</option>
+    <option value="custom">Custom (Adhoc)</option>
+  </select>
+
+  <div id="customBlock" style="display:none;margin-top:8px;">
+    <select id="customType">
+      <option value="hours">Hours</option>
+      <option value="days">Days</option>
+      <option value="months">Months</option>
     </select>
-
-    <div style="margin-top:12px">
-      <button id="calcBtn" class="qm-btn">Calculate</button>
-    </div>
-
-    <div id="resultBox" class="result" style="display:none"></div>
-
-    <h3 style="margin-top:18px">Staples</h3>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="qm-btn" onclick="quickStart(3)">Refresher Juices — 3 Days</button>
-      <button class="qm-btn" onclick="quickStart(8)">Brownie — 8 Days</button>
-      <button class="qm-btn" onclick="quickStart(1)">Cold Foam — 24 hrs</button>
-    </div>
+    <input id="customValue" type="number" min="1" placeholder="Enter amount">
   </div>
 
-  <!-- Modal -->
-  <div id="quickModal" role="dialog" aria-hidden="true">
-    <div id="quickModalContent">
-      <h3>Start From</h3>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button id="qmTodayBtn" class="qm-btn">Today</button>
-        <button id="qmFutureBtn" class="qm-btn">Future Date</button>
-      </div>
-      <div id="qmFutureBlock" style="display:none;margin-top:12px">
-        <input id="qmFutureDate" type="date" style="padding:8px;border-radius:6px;display:block;margin-bottom:8px">
-        <div style="display:flex;gap:8px">
-          <button id="qmConfirmBtn" class="qm-btn">Confirm</button>
-          <button id="qmCancelBtn" class="qm-btn" style="background:#555">Cancel</button>
-        </div>
-      </div>
-      <div style="text-align:right;margin-top:8px"><button id="qmClose" class="qm-btn" style="background:#444">Close</button></div>
-    </div>
+  <button class="calc" onclick="calculate()">Calculate Day Dot</button>
+
+  <div id="resultBox" class="result" style="display:none;"></div>
+
+  <h3>Staple Starbucks Products</h3>
+  <div class="product-list" id="productList">
+    <button class="product" onclick="quickStart(5)">Alternative Milks — 5 Days</button>
+    <button class="product" onclick="quickStart(3)">Refresher Juices — 3 Days</button>
+    <button class="product" onclick="quickStart(2)">Bake House Pastries — 2 Days</button>
+    <button class="product" onclick="quickStart(14)">Shortbread — 14 Days</button>
+    <button class="product" onclick="quickStart(8)">Brownie — 8 Days</button>
+    <button class="product" onclick="quickStart(10)">Loaf Cakes — 10 Days</button>
+    <button class="product" onclick="quickStart(1)">Cold Foam (Prepared) — 24 hrs</button>
+    <button class="product" onclick="quickStart(7)">Cold Brew — 7 Days</button>
+    <button class="product" onclick="quickStart(1)">Ground Coffee (Opened) — 24 hrs</button>
+    <button class="product" onclick="quickStart(7)">Opened Coffee Beans — 7 Days</button>
+    <button class="product" onclick="quickStart(7)">7‑Day Day Dot</button>
   </div>
+</div>
+
+<div class="wrap" id="shelflife" style="display:none;">
+  <h2>FY26 Shelf‑Life Reference</h2>
+  <p>Reference summary from your FY26 shelf‑life document.</p>
+
+  <div class="shelf-section">
+    <h3>Ambient Bakery</h3>
+    <ul>
+      <li>Bakehouse pastries: 2 days delivered / 24 hours display</li>
+      <li>Brownie / Blondie / Cake Pops: 8 days delivered / 3 days display</li>
+      <li>Loaf Cakes: 10 days delivered / 2 days display</li>
+      <li>Chocolate Caramel Shortbread: 14 days delivered / 4 days display</li>
+    </ul>
+
+    <h3>Beverage Components (Ambient)</h3>
+    <ul>
+      <li>Refresha Inclusions: 3 days</li>
+      <li>Powders (Mocha, Matcha, Cookies & Cream): 7 days</li>
+      <li>Syrups & Bases: 30 days</li>
+    </ul>
+
+    <h3>Chilled Components</h3>
+    <ul>
+      <li>Dairy Milk: 3 days</li>
+      <li>Alt Milks (Almond/Oat/Soya): 5 days</li>
+      <li>Refresha Bases: 3 days</li>
+    </ul>
+  </div>
+</div>
+
+<footer>Starbucks‑themed Day Dot Helper — Ready for testing</footer>
+
+<!-- Quick Start Popup (overlay) -->
+<div id="quickModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div id="quickModalContent" role="document">
+    <h3>Start From</h3>
+    <p style="margin:6px 0 10px 0;">Choose how you want to start this Day Dot.</p>
+
+    <div class="qm-buttons">
+      <button class="qm-btn" id="qmTodayBtn">Today</button>
+      <button class="qm-btn" id="qmFutureBtn">Future Date</button>
+    </div>
+
+    <div id="qmFutureBlock" aria-hidden="true">
+      <p style="margin:12px 0 6px 0;">Select Future Date:</p>
+      <input id="qmFutureDate" type="date" />
+      <div style="display:flex;gap:8px;">
+        <button class="qm-btn" id="qmConfirmBtn" style="flex:1;">Confirm</button>
+        <button class="qm-btn" id="qmCancelBtn" style="flex:1;background:#555;">Cancel</button>
+      </div>
+    </div>
+
+    <div id="qmClose" style="margin-top:10px;text-align:right;opacity:0.9;cursor:pointer;">Close</div>
+  </div>
+</div>
 
 <script>
-/* Defensive debug wrapper: any error will be caught and logged without breaking the page */
-(function(){
-  console.log('DEBUG: script start');
-
-  try {
-    // Basic DOM readiness
-    document.addEventListener('DOMContentLoaded', function(){
-      console.log('DEBUG: DOMContentLoaded');
-
-      // Elements
-      const startModeEl = document.getElementById('startMode');
-      const fromDateEl = document.getElementById('fromDate');
-      const presetEl = document.getElementById('preset');
-      const calcBtn = document.getElementById('calcBtn');
-      const resultBox = document.getElementById('resultBox');
-
-      const quickModal = document.getElementById('quickModal');
-      const qmFutureBlock = document.getElementById('qmFutureBlock');
-      const qmFutureDate = document.getElementById('qmFutureDate');
-      const qmTodayBtn = document.getElementById('qmTodayBtn');
-      const qmFutureBtn = document.getElementById('qmFutureBtn');
-      const qmConfirmBtn = document.getElementById('qmConfirmBtn');
-      const qmCancelBtn = document.getElementById('qmCancelBtn');
-      const qmClose = document.getElementById('qmClose');
-
-      console.log('DEBUG: elements fetched');
-
-      // Safe defaults
-      (function setDefaults(){
-        const d = new Date();
-        const iso = d.toISOString().slice(0,10);
-        if(!fromDateEl.value) fromDateEl.value = iso;
-        if(qmFutureDate && !qmFutureDate.value) qmFutureDate.value = iso;
-        console.log('DEBUG: default dates set', iso);
-      })();
-
-      // Start mode visibility
-      function updateFromDateVisibility(){
-        fromDateEl.style.display = startModeEl.value === 'future' ? 'block' : 'none';
-      }
-      startModeEl.addEventListener('change', updateFromDateVisibility);
-      updateFromDateVisibility();
-
-      // Calculate function (defensive)
-      function calculate(startOverride, dateOverride){
-        try {
-          console.log('DEBUG: calculate called', startOverride, dateOverride);
-          const preset = presetEl.value;
-          if(preset === '0'){ alert('Please choose a preset.'); return; }
-
-          let startMode = startOverride ? startOverride : startModeEl.value;
-          let startDate;
-          if(startMode === 'now'){
-            startDate = new Date();
-          } else {
-            const selected = dateOverride ? dateOverride : fromDateEl.value;
-            if(!selected){ alert('Please select a start date.'); return; }
-            startDate = new Date(selected + 'T00:00:00');
-          }
-
-          let future;
-          const days = parseInt(preset,10);
-          if(!isNaN(days)){
-            if(days === 1){
-              if(startMode === 'now'){
-                future = new Date(startDate.getTime() + 24*60*60*1000);
-              } else {
-                future = new Date(startDate.getTime() + 0);
-              }
-            } else {
-              future = new Date(startDate.getTime() + (days - 1) * 24*60*60*1000);
-            }
-          } else {
-            alert('Invalid preset value');
-            return;
-          }
-
-          const formatted = future.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-          resultBox.style.display = 'block';
-          resultBox.innerHTML = 'Expiry: <strong>' + formatted + '</strong>';
-          console.log('DEBUG: calculation complete', formatted);
-        } catch(calcErr){
-          console.error('DEBUG: calculate error', calcErr);
-          alert('Calculation error — see console for details.');
-        }
-      }
-
-      // Wire main calculate button
-      calcBtn.addEventListener('click', function(){ calculate(); });
-
-      // Quick modal functions
-      window.quickStart = function(days){
-        console.log('DEBUG: quickStart', days);
-        presetEl.value = String(days);
-        qmFutureBlock.style.display = 'none';
-        quickModal.style.display = 'block';
-        quickModal.setAttribute('aria-hidden','false');
-      };
-
-      qmTodayBtn.addEventListener('click', function(){
-        console.log('DEBUG: qmTodayBtn clicked');
-        calculate('now');
-        quickModal.style.display = 'none';
-      });
-
-      qmFutureBtn.addEventListener('click', function(){
-        console.log('DEBUG: qmFutureBtn clicked');
-        qmFutureBlock.style.display = 'block';
-        qmFutureDate.focus();
-      });
-
-      qmConfirmBtn.addEventListener('click', function(){
-        console.log('DEBUG: qmConfirmBtn clicked', qmFutureDate.value);
-        if(!qmFutureDate.value){ alert('Select a date'); return; }
-        calculate('future', qmFutureDate.value);
-        quickModal.style.display = 'none';
-      });
-
-      qmCancelBtn.addEventListener('click', function(){ quickModal.style.display = 'none'; });
-      qmClose.addEventListener('click', function(){ quickModal.style.display = 'none'; });
-
-      // Click outside to close
-      quickModal.addEventListener('click', function(e){
-        if(e.target === quickModal) quickModal.style.display = 'none';
-      });
-
-      // Final log
-      console.log('DEBUG: initialization complete');
-    }); // DOMContentLoaded
-  } catch(e){
-    console.error('DEBUG: fatal script error', e);
-    // Do not rethrow — keep page visible
-  }
-})();
-</script>
-</body>
-</html>
+  // Clock
+  function updateClock(){
+    const now = new Date();
+    document.getElementById('
